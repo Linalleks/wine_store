@@ -11,10 +11,8 @@ def get_ru_spelling_years(number_years):
         ru_spelling = 'лет'
     elif number_years % 10 == 1:
         ru_spelling = 'год'
-    elif number_years % 10 >= 2 and number_years % 10 <= 4:
-        ru_spelling = 'года'
     else:
-        ru_spelling = ''
+        ru_spelling = 'года'
     return ru_spelling
 
 
