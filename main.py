@@ -2,27 +2,24 @@ from collections import defaultdict
 import datetime
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
+from dotenv import load_dotenv
+import click
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import pandas
 
-
-def get_ru_spelling_years(number_years):
-    if number_years % 100 >= 11 and number_years % 100 <= 14 or number_years % 10 == 0 or number_years % 10 >= 5:
-        ru_spelling = 'лет'
-    elif number_years % 10 == 1:
-        ru_spelling = 'год'
-    else:
-        ru_spelling = 'года'
-    return ru_spelling
+load_dotenv()
 
 
-def main():
+@click.command()
+@click.argument('excel_path', envvar='EXCEL_PATH', default='wine.xlsx',
+                type=click.Path(exists=True), help='Путь к excel-файлу с данными о винах')
+def main(excel_path):
     winery_start = 1920
     current_year = datetime.date.today().year
     number_years = current_year - winery_start
-    ru_spelling_number_years = f'{number_years} {get_ru_spelling_years(number_years)}'
+    ru_spelling_number_years = f'{number_years} {_get_ru_spelling_years(number_years)}'
 
-    excel_wines = pandas.read_excel('wine.xlsx', keep_default_na=False)
+    excel_wines = pandas.read_excel(excel_path, keep_default_na=False)
     wines = excel_wines.to_dict(orient='records')
     wine_groups = defaultdict(list)
     for wine in wines:
@@ -45,6 +42,16 @@ def main():
 
     server = HTTPServer(('0.0.0.0', 8000), SimpleHTTPRequestHandler)
     server.serve_forever()
+
+
+def _get_ru_spelling_years(number_years):
+    if number_years % 100 >= 11 and number_years % 100 <= 14 or number_years % 10 == 0 or number_years % 10 >= 5:
+        ru_spelling = 'лет'
+    elif number_years % 10 == 1:
+        ru_spelling = 'год'
+    else:
+        ru_spelling = 'года'
+    return ru_spelling
 
 
 if __name__ == '__main__':
