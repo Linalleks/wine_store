@@ -10,9 +10,8 @@ import pandas
 load_dotenv()
 
 
-@click.command()
-@click.argument('excel_path', envvar='EXCEL_PATH', default='wine.xlsx',
-                type=click.Path(exists=True), help='Путь к excel-файлу с данными о винах')
+@click.command(help='EXCEL_PATH: Путь к excel-файлу с данными о винах')
+@click.argument('excel_path', envvar='EXCEL_PATH', default='wine.xlsx', type=click.Path(exists=True))
 def main(excel_path):
     winery_start = 1920
     current_year = datetime.date.today().year
